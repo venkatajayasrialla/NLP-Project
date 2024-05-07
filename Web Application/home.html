@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Add some basic styling for the navigation bar */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background-color: #FFA500;
+            overflow: hidden;
+        }
+
+        nav a, #logout {
+            float: right;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        nav a:hover, #logout:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        #username {
+            float: left;
+            color: white;
+            padding: 14px 16px;
+        }
+        #logo {
+            float: left;
+            padding-left: 10px;
+        }
+
+        #logo img {
+            height: 60px; /* Adjust the height as needed */
+        }
+
+        body {
+            padding: 20px;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        th, td {
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+    <link rel="stylesheet" href="bootstrap.min.css">
+</head>
+<body>
+
+<nav>
+    <a id="logout" href="/index.html">Logout</a>
+</nav>
+<div class="row">
+    <div class="col-md-6">
+        <div style="padding: 20px;">
+            <h2>Courses available</h2>
+        </div>
+        <div id="coursesTable"></div>
+    </div>
+
+    <div class="col-md-6">
+        <div style="padding: 20px;">
+            <h2>Prerequisites Assigned</h2>
+        </div>
+        <div id="prerequisitesTable"></div>
+    </div>
+</div>
+
+<div class="row" style="text-align: center;">
+    <div class="col-md-12">
+        <input type="button" value="Request Prerequisite Waiver" onclick="reirectPrereq()">
+    </div>
+</div>
+
+<script>
+    fetch('get_courses.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'studentID=' + encodeURIComponent(localStorage.getItem('studentID'))
+    })
+        .then(response => response.json())
+        .then(data => {
+            displayCourses(data);
+        })
+        .catch(error => console.error('Error:', error));
+
+    function displayCourses(courses) {
+        const coursesTable = document.getElementById('coursesTable');
+
+        const table = document.createElement('table');
+        table.border = '1';
+
+        const headerRow = table.insertRow(0);
+        headerRow.insertCell(0).textContent = 'Course ID';
+        headerRow.insertCell(1).textContent = 'Course Name';
+
+        courses.forEach(course => {
+            const row = table.insertRow();
+            row.insertCell(0).textContent = course.CourseID;
+            row.insertCell(1).textContent = course.CourseName;
+        });
+
+        coursesTable.appendChild(table);
+    }
+
+    fetch('get_prerequisites.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'studentID=' + encodeURIComponent(localStorage.getItem('studentID'))
+    })
+        .then(response => response.json())
+        .then(data => {
+            displayPrerequisites(data);
+        })
+        .catch(error => console.error('Error:', error));
+
+    function displayPrerequisites(prerequisites) {
+        const prerequisitesTable = document.getElementById('prerequisitesTable');
+
+        const table = document.createElement('table');
+        table.border = '1';
+
+        const headerRow = table.insertRow(0);
+        headerRow.insertCell(0).textContent = 'Course ID';
+        headerRow.insertCell(1).textContent = 'Course Name';
+
+        prerequisites.forEach(prerequisite => {
+            const row = table.insertRow();
+            row.insertCell(0).textContent = prerequisite.CourseID;
+            row.insertCell(1).textContent = prerequisite.CourseName;
+        });
+
+        prerequisitesTable.appendChild(table);
+    }
+
+    function reirectPrereq() {
+        window.location.href = '/PrerequisiteWaiver.html';
+    }
+</script>
+
+</body>
+</html>

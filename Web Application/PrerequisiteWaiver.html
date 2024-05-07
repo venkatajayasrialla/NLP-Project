@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prerequisite Waiver Request</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <style>
+        body {
+            padding: 20px;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-4" style="text-align: center;">Prerequisite Waiver Request</h2>
+            <div class="form-group">
+                <label for="prerequisiteSelect">Select Prerequisite:</label>
+                <select class="form-control" id="prerequisiteSelect"></select>
+            </div>
+
+            <input type="file" id="fileInput" accept=".pdf" onchange="readPDF()">
+    </div>
+    <p></p>
+    <div class="container">
+        <button type="button" class="btn btn-primary" onclick="sendToServer()">Request Waiver</button>
+    </div>
+
+    <script>
+        fetch('get_prerequisites.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'studentID=' + encodeURIComponent(localStorage.getItem('studentID'))
+        })
+            .then(response => response.json())
+            .then(data => {
+                populateDropdown(data);
+            })
+            .catch(error => console.error('Error:', error));
+
+        function populateDropdown(prerequisites) {
+            const dropdown = document.getElementById('prerequisiteSelect');
+
+            prerequisites.forEach(prerequisite => {
+                const option = document.createElement('option');
+                option.value = prerequisite.CourseID;
+                option.textContent = prerequisite.CourseName;
+                dropdown.appendChild(option);
+            });
+        }
+
+        let pdfText = '';
+
+        async function readPDF() {
+            const fileInput = document.getElementById('fileInput');
+
+            const file = fileInput.files[0];
+            if (file) {
+                const loadingTask = pdfjsLib.getDocument({ data: await file.arrayBuffer() });
+
+                loadingTask.promise.then(function(pdf) {
+                    const numPages = pdf.numPages;
+                    const promises = [];
+
+                    for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
+                        promises.push(pdf.getPage(pageNumber).then(function(page) {
+                            return page.getTextContent().then(function(textContent) {
+                                return textContent.items.map(item => item.str).join(' ');
+                            });
+                        }));
+                    }
+
+                    Promise.all(promises).then(function(texts) {
+                        pdfText = texts.join('\n');
+                        console.log('Extracted Text:', pdfText);
+                    });
+                });
+            } else {
+                alert('Please select a PDF file.');
+            }
+        }
+
+        function sendToServer() {
+            var selectedPrerequisite = document.getElementById('prerequisiteSelect').value;
+            const formData = new FormData();
+            formData.append('extractedText', pdfText);
+            formData.append('studentID', localStorage.getItem('studentID'));
+            formData.append('selectedPrerequisite', selectedPrerequisite);;
+
+            fetch('http://localhost:5000/success', {
+                mode: 'no-cors',
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log('Response from Flask:', data);
+                window.location.href = '/home.html';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
