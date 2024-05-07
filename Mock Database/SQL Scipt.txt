@@ -1,0 +1,38 @@
+CREATE DATABASE `student_prerequisites` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+use `student_prerequisites`;
+CREATE TABLE `courses` (
+  `CourseID` int NOT NULL,
+  `CourseName` varchar(255) NOT NULL,
+  PRIMARY KEY (`CourseID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `prerequisites` (
+  `PrerequisiteID` int NOT NULL,
+  `CourseID` int DEFAULT NULL,
+  `PrerequisiteCourseID` int DEFAULT NULL,
+  PRIMARY KEY (`PrerequisiteID`),
+  KEY `FK_Courses_idx` (`CourseID`),
+  KEY `FK_PrerequisiteCourses_idx` (`PrerequisiteCourseID`),
+  CONSTRAINT `FK_Courses` FOREIGN KEY (`CourseID`) REFERENCES `courses` (`CourseID`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `FK_PrerequisiteCourses` FOREIGN KEY (`PrerequisiteCourseID`) REFERENCES `courses` (`CourseID`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `students` (
+  `StudentID` int NOT NULL,
+  `FirstName` varchar(50) DEFAULT NULL,
+  `LastName` varchar(50) DEFAULT NULL,
+  `Email` varchar(100) DEFAULT NULL,
+  `Password` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`StudentID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `student_courses` (
+  `EnrollmentID` int NOT NULL,
+  `StudentID` int DEFAULT NULL,
+  `PrerequisiteCourseID` int DEFAULT NULL,
+  PRIMARY KEY (`EnrollmentID`),
+  KEY `FK_Student_idx` (`StudentID`),
+  KEY `FK_Course_idx` (`PrerequisiteCourseID`),
+  CONSTRAINT `FK_Course` FOREIGN KEY (`PrerequisiteCourseID`) REFERENCES `courses` (`CourseID`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `FK_Student` FOREIGN KEY (`StudentID`) REFERENCES `students` (`StudentID`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
