@@ -1,0 +1,58 @@
+Instructions for running the batch file to get the accuracy of text matching algorithms - 
+1) Download the 'NLP_Project_Get_Model_Accuracy' folder which has the test dataset. 
+2) Run the 'install_libraries.py' file
+3) If there are errors in installing gensim library because of the 'Microsoft Visual Studio Version 14 needed' error follow the instructions in this link.
+(https://stackoverflow.com/questions/44951456/pip-error-microsoft-visual-c-14-0-is-required)
+4) Restart the kernel or close and restart the IDE after installing the required libraries.
+5) Open the 'nlp_project_batch.py' file and change the path (line 23) to the path where you have downloaded the dataset.
+6) Run the 'nlp_project_batch.py' file, the overall accuracy of the three text matching methods will be printed. Note - It will take a while for the code to run.
+7) If you want to add/remove from the dataset, please add/remove the label of the file you have added/removed from the dataset in the correct_list dictionary on line 21.
+
+Instructions for testing the prototype web application -  
+1) Download and configure the Apache web server.(Detailed instructions given below)
+2) Download PHP
+3) Run steps 2, 3 and 4 given above if not already done.
+4) Open the 'Mock Database' folder, copy the contents of the 'SQL Script.txt' file and run in MySQL to create the database and the database.
+5) Go to the schemas in MySQL, select the 'student_prerequisites' database, expand the tables, right click on the tables one by one; and use the Table Data Import Wizard to import the mock data from the 'students.csv', 'courses.csv', 'prerequisites.csv', and 'student_courses.csv' files into the corresponding tables in this order. This will create the mock database used for our application.
+6) Go to the location where you have installed the Apache webserver and go to the htdocs folder. Copy paste the contents of the 'Web Application' folder in this location.
+7) Open the files - 'get_courses.php', 'get_prerequisites.php' and 'LoginUser.php' and change the password of the database connection to your MySQL password.
+8) Change the password of the database connection to your MySQL password in 'main.py'. (line - 109)
+9) Run the 'main.py' file. Wait till the debugger pin is displayed on the terminal.
+10) Open a browser and go to http://localhost and enter any user credentials mentioned in the 'students.csv' file.
+11) You can view the courses available to the student and the prerequisites assigned in the home page.
+12) Click on the 'Request Prerequisite Waiver' button.
+13) In the webpage that appears, select the prerequisite you want to waive off.
+14) Then click on the 'Choose file' button and upload the related undergrad syllabus file in pdf format. We have added some files in the 'Prototype Test Files' folder from where you can chose one to test.
+15) Click the 'Request Waiver' button.
+16) Wait for around 2 minutes; you will be redirected to the home page.
+17) If the prerequsite was waived off, it would have been removed from the list of prerequiste courses and some new courses would have been unlocked.
+
+Instructions for downloading Apache Webserver and  PHP (You can alternatively use this video as a guide - https://youtu.be/TBlKfAwxW7Q?si=vNCKH9uVi566_9RQ) - 
+1) To install apache web server go to https://www.apachelounge.com/download/ website and download the apache server based on the system configuration.
+2) Once downloaded open the zip file and copy the Apache24 folder and paste it into your C drive.
+3) Now go to Apache24->bin->httd.
+4) Right click on the httd application and run it as administrator.
+5) Check if you get any error.
+6) Now close the window and open the command prompt and run it as administrator.
+7) Navigate to httpd file through cd /Apache24/bin. Once you are in httpd application path, use the command httpd -k install.
+8) After it is installed successfully,start the server using httpd -k start. If you open the browser and type in localhost, it displays as It Works!
+9) To download php go to https://www.php.net/downloads.php and download the zip file based on syatem configuration.
+10) Copy all the files in the zip folder and create a new folder in Windows C with name PHP and paste the files over there.
+11) Now copy php8apache2_4 file name(for other versions you can find that version name in place of 8). Go to Apache24->conf->httpd.conf file.
+12) Paste below code in the last line of the file.
+LoadModule php_module "C:/PHP/php8apache2_4"
+AddHandler application/x-httpd-php .php
+PHPIniDir C:/PHP
+13) Now find DirectoryIndex index.html line in the file and change it to DirectoryIndex index.php index.html.
+14) Now go to command prompt and start the apache using httpd -k start and it shows php information.
+15) Now go to Apache24->htdocs->delete the index.html file and create new file as index.php and add below code.
+<?php phpinfo() ?>
+16) Once you go to localhost in any web browser you would see php information.
+17) Now install mysql through https://dev.mysql.com/downloads/ as per system configuration.
+18) Once you download the mysql as per system configuration run the installer.
+19) Select Developer mode, if it is not available select full mode. Click Execute to start installation.
+20) After installation it goes to product configuration, don't change anything in type and Networking page.
+21) Select Use Strong Password then give the root password and click next till it completes the installation.
+22) Now install pHpMyAdmin through https://www.phpmyadmin.net/downloads/
+23) Copy the contents of the downloaded zip file into Apache24->htdocs
+24) Now open the local host and go to php admin. Login with root as user name and above given password.
